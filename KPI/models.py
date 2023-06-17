@@ -27,6 +27,23 @@ class Employee(models.Model):
     last_month_rating = models.FloatField("last month", null=False,blank=False, default=0.0)
     time_of_eval = models.DateTimeField("time of evaluation", auto_now=True)
     
+    def save(self, *args, **kwargs):
+        previous_month_rating = Employee.objects.filter(name=self.name).order_by('-time_of_eval').values_list('monthly_rating', flat=True).exclude(last_month_rating=0).first()
+        if previous_month_rating is not None or previous_month_rating != 0:
+            self.last_month_rating = previous_month_rating
+        total = (self.tone_of_voice +
+                 self.starting_script +
+                 self.ending_script +
+                 self.resolution_time +
+                 self.choice_of_words +
+                 self.clarity +
+                 self.onCallComplaintChecking +
+                 self.handlingUnderPressure +
+                 self.ticketRaising +
+                 self.billableTime)
+        self.monthly_rating = total / 10
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.name
 

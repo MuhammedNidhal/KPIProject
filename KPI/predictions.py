@@ -9,7 +9,6 @@ from django.db.models.functions import Round
 
 
 def train_and_save_model(data, save_path):
-    print(data)
     # Create a DataFrame from the given list of data
     df = pd.DataFrame(
         data,
